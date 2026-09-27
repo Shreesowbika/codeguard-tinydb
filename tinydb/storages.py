@@ -3,6 +3,7 @@ Contains the :class:`base class <tinydb.storages.Storage>` for storages and
 implementations.
 """
 
+import copy
 import io
 import json
 import os
@@ -175,7 +176,7 @@ class MemoryStorage(Storage):
         self.memory = None
 
     def read(self) -> Optional[dict[str, dict[str, Any]]]:
-        return self.memory
+        return copy.deepcopy(self.memory)
 
     def write(self, data: dict[str, dict[str, Any]]):
         self.memory = data

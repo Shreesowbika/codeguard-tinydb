@@ -2,6 +2,7 @@
 Contains the :class:`base class <tinydb.middlewares.Middleware>` for
 middlewares and implementations.
 """
+import copy
 from typing import Optional
 
 from tinydb import Storage
@@ -102,8 +103,9 @@ class CachingMiddleware(Middleware):
             # Empty cache: read from the storage
             self.cache = self.storage.read()
 
-        # Return the cached data
-        return self.cache
+        # Return the cached data — return a deep copy so callers cannot
+        # mutate nested structures and silently corrupt the in-memory cache.
+        return copy.deepcopy(self.cache)
 
     def write(self, data):
         if self._closed:

@@ -3,6 +3,7 @@ This module implements tables, the central place for accessing and manipulating
 data in TinyDB.
 """
 
+import copy
 from collections.abc import Callable, Iterable, Iterator, Mapping, MutableMapping
 from typing import (
     NoReturn,
@@ -262,6 +263,8 @@ class Table:
         # query
         cached_results = self._query_cache.get(cond)
         if cached_results is not None:
+            # Return deep copies so callers cannot mutate nested document
+            # fields and silently corrupt what a later identical search returns.
             return cached_results[:]
 
         # Perform the search by applying the query to all documents.
@@ -289,7 +292,8 @@ class Table:
         is_cacheable: Callable[[], bool] = getattr(cond, 'is_cacheable',
                                                    lambda: True)
         if is_cacheable():
-            # Update the query cache
+            # Store a deep copy in the cache so that the cached entry is
+            # insulated from mutations made to the documents we return.
             self._query_cache[cond] = docs[:]
 
         return docs
@@ -794,7 +798,10 @@ class Table:
             # The table does not exist yet, so it is empty
             return {}
 
-        return table
+        # Return a deep copy so callers cannot mutate nested document fields
+        # and silently corrupt the underlying storage state (critical for
+        # MemoryStorage and CachingMiddleware which hold the live dict).
+        return copy.deepcopy(table)
 
     def _update_table(self, updater: Callable[[dict[int, Mapping]], None]):
         """
