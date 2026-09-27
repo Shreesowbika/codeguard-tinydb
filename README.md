@@ -2,7 +2,11 @@
 
 **IBM Bob 2.0 Hackathon Submission**
 
-CodeGuard amortizes expensive LLM context windows by ingesting a repository once and running parallel IBM Bob subagents to simultaneously hunt dead code and blast-radius bugs without introducing regressions.
+**Team:** HackPulse
+**Team Lead:** SRISHANTH S
+**Member:** SHREE SOWBIKA S Y
+
+---
 
 ## 🧠 IBM Bob Usage & Architecture
 
